@@ -340,228 +340,6 @@ define('skylark-langx/types',[
     };
 
 });
-define('skylark-langx/arrays',[
-	"./types"
-],function(types,objects){
-	var filter = Array.prototype.filter,
-		isArrayLike = types.isArrayLike;
-
-    /**
-     * The base implementation of `_.findIndex` and `_.findLastIndex` without
-     * support for iteratee shorthands.
-     *
-     * @param {Array} array The array to inspect.
-     * @param {Function} predicate The function invoked per iteration.
-     * @param {number} fromIndex The index to search from.
-     * @param {boolean} [fromRight] Specify iterating from right to left.
-     * @returns {number} Returns the index of the matched value, else `-1`.
-     */
-    function baseFindIndex(array, predicate, fromIndex, fromRight) {
-      var length = array.length,
-          index = fromIndex + (fromRight ? 1 : -1);
-
-      while ((fromRight ? index-- : ++index < length)) {
-        if (predicate(array[index], index, array)) {
-          return index;
-        }
-      }
-      return -1;
-    }
-
-    /**
-     * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
-     *
-     * @param {Array} array The array to inspect.
-     * @param {*} value The value to search for.
-     * @param {number} fromIndex The index to search from.
-     * @returns {number} Returns the index of the matched value, else `-1`.
-     */
-    function baseIndexOf(array, value, fromIndex) {
-      if (value !== value) {
-        return baseFindIndex(array, baseIsNaN, fromIndex);
-      }
-      var index = fromIndex - 1,
-          length = array.length;
-
-      while (++index < length) {
-        if (array[index] === value) {
-          return index;
-        }
-      }
-      return -1;
-    }
-
-    /**
-     * The base implementation of `isNaN` without support for number objects.
-     *
-     * @private
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is `NaN`, else `false`.
-     */
-    function baseIsNaN(value) {
-      return value !== value;
-    }
-
-
-    function compact(array) {
-        return filter.call(array, function(item) {
-            return item != null;
-        });
-    }
-
-    function filter2(array,func) {
-      return filter.call(array,func);
-    }
-
-    function flatten(array) {
-        if (isArrayLike(array)) {
-            var result = [];
-            for (var i = 0; i < array.length; i++) {
-                var item = array[i];
-                if (isArrayLike(item)) {
-                    for (var j = 0; j < item.length; j++) {
-                        result.push(item[j]);
-                    }
-                } else {
-                    result.push(item);
-                }
-            }
-            return result;
-        } else {
-            return array;
-        }
-        //return array.length > 0 ? concat.apply([], array) : array;
-    }
-
-    function grep(array, callback) {
-        var out = [];
-
-        each(array, function(i, item) {
-            if (callback(item, i)) {
-                out.push(item);
-            }
-        });
-
-        return out;
-    }
-
-    function inArray(item, array) {
-        if (!array) {
-            return -1;
-        }
-        var i;
-
-        if (array.indexOf) {
-            return array.indexOf(item);
-        }
-
-        i = array.length;
-        while (i--) {
-            if (array[i] === item) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    function makeArray(obj, offset, startWith) {
-       if (isArrayLike(obj) ) {
-        return (startWith || []).concat(Array.prototype.slice.call(obj, offset || 0));
-      }
-
-      // array of single index
-      return [ obj ];             
-    }
-
-
-    function forEach (arr, fn) {
-      if (arr.forEach) return arr.forEach(fn)
-      for (var i = 0; i < arr.length; i++) fn(arr[i], i);
-    }
-
-    function map(elements, callback) {
-        var value, values = [],
-            i, key
-        if (isArrayLike(elements))
-            for (i = 0; i < elements.length; i++) {
-                value = callback.call(elements[i], elements[i], i);
-                if (value != null) values.push(value)
-            }
-        else
-            for (key in elements) {
-                value = callback.call(elements[key], elements[key], key);
-                if (value != null) values.push(value)
-            }
-        return flatten(values)
-    }
-
-
-    function merge( first, second ) {
-      var l = second.length,
-          i = first.length,
-          j = 0;
-
-      if ( typeof l === "number" ) {
-        for ( ; j < l; j++ ) {
-          first[ i++ ] = second[ j ];
-        }
-      } else {
-        while ( second[j] !== undefined ) {
-          first[ i++ ] = second[ j++ ];
-        }
-      }
-
-      first.length = i;
-
-      return first;
-    }
-
-    function reduce(array,callback,initialValue) {
-        return Array.prototype.reduce.call(array,callback,initialValue);
-    }
-
-    function uniq(array) {
-        return filter.call(array, function(item, idx) {
-            return array.indexOf(item) == idx;
-        })
-    }
-
-    return {
-        baseFindIndex: baseFindIndex,
-
-        baseIndexOf : baseIndexOf,
-        
-        compact: compact,
-
-        first : function(items,n) {
-            if (n) {
-                return items.slice(0,n);
-            } else {
-                return items[0];
-            }
-        },
-
-        filter : filter2,
-        
-        flatten: flatten,
-
-        inArray: inArray,
-
-        makeArray: makeArray,
-
-        merge : merge,
-
-        forEach : forEach,
-
-        map : map,
-        
-        reduce : reduce,
-
-        uniq : uniq
-
-    }
-});
 define('skylark-langx/numbers',[
 	"./types"
 ],function(types){
@@ -1188,6 +966,231 @@ define('skylark-langx/objects',[
 
 
 
+});
+define('skylark-langx/arrays',[
+	"./types",
+  "./objects"
+],function(types,objects){
+	var filter = Array.prototype.filter,
+		isArrayLike = types.isArrayLike;
+
+    /**
+     * The base implementation of `_.findIndex` and `_.findLastIndex` without
+     * support for iteratee shorthands.
+     *
+     * @param {Array} array The array to inspect.
+     * @param {Function} predicate The function invoked per iteration.
+     * @param {number} fromIndex The index to search from.
+     * @param {boolean} [fromRight] Specify iterating from right to left.
+     * @returns {number} Returns the index of the matched value, else `-1`.
+     */
+    function baseFindIndex(array, predicate, fromIndex, fromRight) {
+      var length = array.length,
+          index = fromIndex + (fromRight ? 1 : -1);
+
+      while ((fromRight ? index-- : ++index < length)) {
+        if (predicate(array[index], index, array)) {
+          return index;
+        }
+      }
+      return -1;
+    }
+
+    /**
+     * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
+     *
+     * @param {Array} array The array to inspect.
+     * @param {*} value The value to search for.
+     * @param {number} fromIndex The index to search from.
+     * @returns {number} Returns the index of the matched value, else `-1`.
+     */
+    function baseIndexOf(array, value, fromIndex) {
+      if (value !== value) {
+        return baseFindIndex(array, baseIsNaN, fromIndex);
+      }
+      var index = fromIndex - 1,
+          length = array.length;
+
+      while (++index < length) {
+        if (array[index] === value) {
+          return index;
+        }
+      }
+      return -1;
+    }
+
+    /**
+     * The base implementation of `isNaN` without support for number objects.
+     *
+     * @private
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is `NaN`, else `false`.
+     */
+    function baseIsNaN(value) {
+      return value !== value;
+    }
+
+
+    function compact(array) {
+        return filter.call(array, function(item) {
+            return item != null;
+        });
+    }
+
+    function filter2(array,func) {
+      return filter.call(array,func);
+    }
+
+    function flatten(array) {
+        if (isArrayLike(array)) {
+            var result = [];
+            for (var i = 0; i < array.length; i++) {
+                var item = array[i];
+                if (isArrayLike(item)) {
+                    for (var j = 0; j < item.length; j++) {
+                        result.push(item[j]);
+                    }
+                } else {
+                    result.push(item);
+                }
+            }
+            return result;
+        } else {
+            return array;
+        }
+        //return array.length > 0 ? concat.apply([], array) : array;
+    }
+
+    function grep(array, callback) {
+        var out = [];
+
+        objects.each(array, function(i, item) {
+            if (callback(item, i)) {
+                out.push(item);
+            }
+        });
+
+        return out;
+    }
+
+    function inArray(item, array) {
+        if (!array) {
+            return -1;
+        }
+        var i;
+
+        if (array.indexOf) {
+            return array.indexOf(item);
+        }
+
+        i = array.length;
+        while (i--) {
+            if (array[i] === item) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    function makeArray(obj, offset, startWith) {
+       if (isArrayLike(obj) ) {
+        return (startWith || []).concat(Array.prototype.slice.call(obj, offset || 0));
+      }
+
+      // array of single index
+      return [ obj ];             
+    }
+
+
+    function forEach (arr, fn) {
+      if (arr.forEach) return arr.forEach(fn)
+      for (var i = 0; i < arr.length; i++) fn(arr[i], i);
+    }
+
+    function map(elements, callback) {
+        var value, values = [],
+            i, key
+        if (isArrayLike(elements))
+            for (i = 0; i < elements.length; i++) {
+                value = callback.call(elements[i], elements[i], i);
+                if (value != null) values.push(value)
+            }
+        else
+            for (key in elements) {
+                value = callback.call(elements[key], elements[key], key);
+                if (value != null) values.push(value)
+            }
+        return flatten(values)
+    }
+
+
+    function merge( first, second ) {
+      var l = second.length,
+          i = first.length,
+          j = 0;
+
+      if ( typeof l === "number" ) {
+        for ( ; j < l; j++ ) {
+          first[ i++ ] = second[ j ];
+        }
+      } else {
+        while ( second[j] !== undefined ) {
+          first[ i++ ] = second[ j++ ];
+        }
+      }
+
+      first.length = i;
+
+      return first;
+    }
+
+    function reduce(array,callback,initialValue) {
+        return Array.prototype.reduce.call(array,callback,initialValue);
+    }
+
+    function uniq(array) {
+        return filter.call(array, function(item, idx) {
+            return array.indexOf(item) == idx;
+        })
+    }
+
+    return {
+        baseFindIndex: baseFindIndex,
+
+        baseIndexOf : baseIndexOf,
+        
+        compact: compact,
+
+        first : function(items,n) {
+            if (n) {
+                return items.slice(0,n);
+            } else {
+                return items[0];
+            }
+        },
+
+        filter : filter2,
+        
+        flatten: flatten,
+
+        grep: grep,
+
+        inArray: inArray,
+
+        makeArray: makeArray,
+
+        merge : merge,
+
+        forEach : forEach,
+
+        map : map,
+        
+        reduce : reduce,
+
+        uniq : uniq
+
+    }
 });
 define('skylark-langx/klass',[
     "./arrays",
@@ -2771,6 +2774,21 @@ define('skylark-langx/hoster',[
 });
 define('skylark-langx/strings',[
 ],function(){
+    // add default escape function for escaping HTML entities
+    var escapeCharMap = Object.freeze({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '`': '&#x60;',
+        '=': '&#x3D;',
+    });
+    function replaceChar(c) {
+        return escapeCharMap[c];
+    }
+    var escapeChars = /[&<>"'`=]/g;
+
 
      /*
      * Converts camel case into dashes.
@@ -2800,10 +2818,22 @@ define('skylark-langx/strings',[
         }
     }
 
+    function escapeHTML(str) {
+        if (str == null) {
+            return '';
+        }
+        if (!str) {
+            return String(str);
+        }
+
+        return str.toString().replace(escapeChars, replaceChar);
+    }
+
 
     function trim(str) {
         return str == null ? "" : String.prototype.trim.call(str);
     }
+
     function substitute( /*String*/ template,
         /*Object|Array*/
         map,
@@ -2863,6 +2893,100 @@ define('skylark-langx/strings',[
         return prefix ? prefix + id : id;
     }
 
+
+    /**
+     * https://github.com/cho45/micro-template.js
+     * (c) cho45 http://cho45.github.com/mit-license
+     */
+    function template (id, data) {
+
+        function include(name, args) {
+            var stash = {};
+            for (var key in template.context.stash) if (template.context.stash.hasOwnProperty(key)) {
+                stash[key] = template.context.stash[key];
+            }
+            if (args) for (var key in args) if (args.hasOwnProperty(key)) {
+                stash[key] = args[key];
+            }
+            var context = template.context;
+            context.ret += template(name, stash);
+            template.context = context;
+        }
+
+        function wrapper(name, fun) {
+            var current = template.context.ret;
+            template.context.ret = '';
+            fun.apply(template.context);
+            var content = template.context.ret;
+            var orig_content = template.context.stash.content;
+            template.context.stash.content = content;
+            template.context.ret = current + template(name, template.context.stash);
+            template.context.stash.content = orig_content;
+        }
+
+        var me = arguments.callee;
+        if (!me.cache[id]) me.cache[id] = (function () {
+            var name = id, string = /^[\w\-]+$/.test(id) ? me.get(id): (name = 'template(string)', id); // no warnings
+            var line = 1, body = (
+                "try { " +
+                    (me.variable ?  "var " + me.variable + " = this.stash;" : "with (this.stash) { ") +
+                        "this.ret += '"  +
+                        string.
+                            replace(/<%/g, '\x11').replace(/%>/g, '\x13'). // if you want other tag, just edit this line
+                            replace(/'(?![^\x11\x13]+?\x13)/g, '\\x27').
+                            replace(/^\s*|\s*$/g, '').
+                            replace(/\n|\r\n/g, function () { return "';\nthis.line = " + (++line) + "; this.ret += '\\n" }).
+                            replace(/\x11=raw(.+?)\x13/g, "' + ($1) + '").
+                            replace(/\x11=(.+?)\x13/g, "' + this.escapeHTML($1) + '").
+                            replace(/\x11(.+?)\x13/g, "'; $1; this.ret += '") +
+                    "'; " + (me.variable ? "" : "}") + "return this.ret;" +
+                "} catch (e) { throw 'TemplateError: ' + e + ' (on " + name + "' + ' line ' + this.line + ')'; } " +
+                "//@ sourceURL=" + name + "\n" // source map
+            ).replace(/this\.ret \+= '';/g, '');
+            var func = new Function(body);
+            var map  = { '&' : '&amp;', '<' : '&lt;', '>' : '&gt;', '\x22' : '&#x22;', '\x27' : '&#x27;' };
+            var escapeHTML = function (string) { return (''+string).replace(/[&<>\'\"]/g, function (_) { return map[_] }) };
+            return function (stash) { return func.call(me.context = { escapeHTML: escapeHTML, line: 1, ret : '', stash: stash }) };
+        })();
+        return data ? me.cache[id](data) : me.cache[id];
+    }
+
+    template.cache = {};
+    
+
+    template.get = function (id) {
+        return document.getElementById(id).innerHTML;
+    };
+
+    function rtrim(str) {
+        return str.replace(/\s+$/g, '');
+    }
+
+    // return boolean if string 'true' or string 'false', or if a parsable string which is a number
+    // also supports JSON object and/or arrays parsing
+    function toType(str) {
+        var type = typeof str;
+        if (type !== 'string') {
+            return str;
+        }
+        var nb = parseFloat(str);
+        if (!isNaN(nb) && isFinite(str)) {
+            return nb;
+        }
+        if (str === 'false') {
+            return false;
+        }
+        if (str === 'true') {
+            return true;
+        }
+
+        try {
+            str = JSON.parse(str);
+        } catch (e) {}
+
+        return str;
+    }
+
 	return {
         camelCase: function(str) {
             return str.replace(/-([\da-z])/g, function(a) {
@@ -2874,9 +2998,13 @@ define('skylark-langx/strings',[
 
         deserializeValue: deserializeValue,
 
+        escapeHTML : escapeHTML,
+
         lowerFirst: function(str) {
             return str.charAt(0).toLowerCase() + str.slice(1);
         },
+
+        rtrim : rtrim,
 
         serializeValue: function(value) {
             return JSON.stringify(value)
@@ -2884,6 +3012,8 @@ define('skylark-langx/strings',[
 
 
         substitute: substitute,
+
+        template : template,
 
         trim: trim,
 
@@ -3028,10 +3158,14 @@ define('skylark-langx/Xhr',[
         var param = function(obj, traditional) {
             var params = []
             params.add = function(key, value) {
-                if (isFunction(value)) value = value()
-                if (value == null) value = ""
-                this.push(escape(key) + '=' + escape(value))
-            }
+                if (isFunction(value)) {
+                  value = value();
+                }
+                if (value == null) {
+                  value = "";
+                }
+                this.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+            };
             serialize(params, obj, traditional)
             return params.join('&').replace(/%20/g, '+')
         };
@@ -3046,6 +3180,10 @@ define('skylark-langx/Xhr',[
                     xhr = _.xhr = new XMLHttpRequest();
 
                 serializeData(options)
+
+                if (options.beforeSend) {
+                    options.beforeSend.call(this, xhr, options);
+                }                
 
                 var dataType = options.dataType || options.handleAs,
                     mime = options.mimeType || options.accepts[dataType],
@@ -4217,7 +4355,28 @@ define('skylark-utils-dom/noder',[
         return el;
     };
 
+    function enhancePlaceContent(placing,node) {
+        if (langx.isFunction(placing)) {
+            return placing.apply(node,[]);
+        }
+        if (langx.isArrayLike(placing)) {
+            var neddsFlattern;
+            for (var i=0;i<placing.length;i++) {
+                if (langx.isFunction(placing[i])) {
+                    placing[i] = placing[i].apply(node,[]);
+                    if (langx.isArrayLike(placing[i])) {
+                        neddsFlattern = true;
+                    }
+                }
+            }
+            if (neddsFlattern) {
+                placing = langx.flatten(placing);
+            }
+        }
+        return placing;
+    }
     function after(node, placing, copyByClone) {
+        placing = enhancePlaceContent(placing,node);
         var refNode = node,
             parent = refNode.parentNode;
         if (parent) {
@@ -4236,6 +4395,7 @@ define('skylark-utils-dom/noder',[
     }
 
     function append(node, placing, copyByClone) {
+        placing = enhancePlaceContent(placing,node);
         var parentNode = node,
             nodes = ensureNodes(placing, copyByClone);
         for (var i = 0; i < nodes.length; i++) {
@@ -4245,6 +4405,7 @@ define('skylark-utils-dom/noder',[
     }
 
     function before(node, placing, copyByClone) {
+        placing = enhancePlaceContent(placing,node);
         var refNode = node,
             parent = refNode.parentNode;
         if (parent) {
@@ -8497,7 +8658,7 @@ define('skylark-utils-dom/fx',[
         })
         var callback = function () { 
             if (!called) {
-                eventer.trigger(elm,'transitionEnd') 
+                eventer.trigger(elm,browser.support.transition.end) 
             }
         };
         setTimeout(callback, duration);
@@ -8862,7 +9023,16 @@ define('skylark-utils-dom/query',[
                 return this.length
             },
 
-            remove: wrapper_every_act(noder.remove, noder),
+            //remove: wrapper_every_act(noder.remove, noder),
+            remove : function(selector) {
+                if (selector) {
+                    return this.find(selector).remove();
+                }
+                this.each(function(i,node){
+                    noder.remove(node);
+                });
+                return this;
+            },
 
             each: function(callback) {
                 langx.each(this, callback);
@@ -9206,7 +9376,7 @@ define('skylark-utils-dom/query',[
             return function(html) {
                 var argType, nodes = langx.map(arguments, function(arg) {
                     argType = type(arg)
-                    return argType == "object" || argType == "array" || arg == null ?
+                    return argType == "function" || argType == "object" || argType == "array" || arg == null ?
                         arg : noder.createFragment(arg)
                 });
                 if (nodes.length < 1) {
