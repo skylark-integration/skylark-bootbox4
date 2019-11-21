@@ -23,6 +23,8 @@
     "type": "git",
     "url": "https://github.com/skylarkui/skylark-bootbox4.git"
   },
+  "files": ["examples/", "dist/", "src/","themes/"],
+  
   "bugs": {
     "url": "https://github.com/skylarkui/skylark-bootbox4/issues"
   },
