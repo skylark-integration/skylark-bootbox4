@@ -3,36 +3,31 @@
   "description": "A version of bootbox4 that ported to running on skylarkjs",
   "version": "0.9.2",
   "keywords": [
-    "css",
-    "less",
-    "mobile-first",
-    "responsive",
-    "front-end",
-    "framework",
-    "web"
+    "skylark",
+    "bootbox"
   ],
-  "homepage": "https://github.com/skylarkui/skylark-bootbox4/",
+  "homepage": "https://github.com/skylark-integration/skylark-bootbox4/",
   "author": "Hudaokeji, Inc.",
   "scripts": {
     "build": "sbundle build ."
   },
-  "style": "dist/css/bootstrap.css",
-  "less": "less/bootstrap.less",
-  "main": "./dist/js/main",
   "repository": {
     "type": "git",
-    "url": "https://github.com/skylarkui/skylark-bootbox4.git"
+    "url": "https://github.com/skylark-integration/skylark-bootbox4.git"
   },
-  "files": ["examples/", "dist/", "src/","themes/"],
-  
+  "files": [
+    "examples/",
+    "dist/",
+    "src/",
+    "themes/"
+  ],
   "bugs": {
-    "url": "https://github.com/skylarkui/skylark-bootbox4/issues"
+    "url": "https://github.com/skylark-integration/skylark-bootbox4/issues"
   },
   "license": "MIT",
   "dependencies": {
-    "skylark-bootstrap3": "git+https://github.com/skylarkui/skylark-bootstrap3.git#master",
-    "skylark-langx": "git+https://github.com/skylarklangx/skylark-langx.git#master",
-    "skylark-utils-dom": "git+https://github.com/skylarkutils/skylark-utils-dom.git#master"
+    "skylark-domx-plugins": "git+https://github.com/skylark-domx/skylark-domx-plugins.git#master",
+    "skylark-langx": "git+https://github.com/skylark-langx/skylark-langx.git#master"
   },
   "engines": {
     "node": ">=0.10.1"
